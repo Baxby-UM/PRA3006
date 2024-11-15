@@ -2,7 +2,7 @@ SELECT ?name ?species ?genus ?family ?class ?order ?phylum ?kingdom ?redlist ?tr
 WHERE 
 {
   ?animalID      
-  		<https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/scientificName> ?name ;
+  		  <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/scientificName> ?name ;
         <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/kingdomName> ?kingdom ;
         <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/phylumName> ?phylum ;
         <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/orderName> ?order ;
