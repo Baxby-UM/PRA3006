@@ -20,6 +20,9 @@
             width: 100%;
             height: auto;
         }
+        text {
+            font-size: 12px; /* You can further adjust font size here */
+        }
     </style>
 </head>
 <body>
@@ -29,9 +32,9 @@
 
     <script>
         // Set up the dimensions
-        const width = Math.min(window.innerWidth, 1200); // Responsive width, with a max limit
-        const outerRadius = width / 2;
-        const innerRadius = outerRadius - 170;
+        const width = Math.min(window.innerWidth, 3300); // Increase the max width to allow more space
+        const outerRadius = 3000;  // Further increase the outer radius
+        const innerRadius = outerRadius - 400;  // Increase inner radius even more
 
         // Create a color scale for the IUCN conservation status
         const redlistColor = d3.scaleOrdinal()
@@ -41,17 +44,17 @@
         // Create the SVG element inside the container
         const svg = d3.select("#tree-container")
             .append("svg")
-            .attr("viewBox", [-outerRadius, -outerRadius, width, width])
+            .attr("viewBox", [-outerRadius, -outerRadius, width * 2, width * 2])  // Further increase viewbox size
             .attr("preserveAspectRatio", "xMidYMid meet")
             .attr("font-family", "sans-serif")
-            .attr("font-size", 10);
+            .attr("font-size", 12);  // Slightly reduce font size for better readability
 
         // Create a group element (`g`) to hold all elements (nodes and links)
         const g = svg.append("g");
 
         // Set up zoom behavior
         const zoom = d3.zoom()
-            .scaleExtent([0.5, 10]) // Allow zooming out to half size and in up to 10x
+            .scaleExtent([0.5, 50]) // Allow zooming in further
             .on("zoom", (event) => {
                 g.attr("transform", event.transform); // Apply zoom to the `<g>` container
             });
@@ -68,12 +71,12 @@
 
             // Set up the cluster layout
             const cluster = d3.cluster()
-                .size([360, innerRadius]);
+                .size([360, innerRadius]);  // Use a larger inner radius to spread nodes further apart
 
             cluster(root);
 
             // Draw the links between nodes
-            g.append("g") // Append the links to the `<g>` container
+            g.append("g")
                 .attr("fill", "none")
                 .attr("stroke", "#555")
                 .attr("stroke-opacity", 0.4)
@@ -87,28 +90,26 @@
                 .attr("stroke", d => redlistColor(d.target.data.redlistCategory || "Least Concern"));
 
             // Draw the nodes (labels)
-            g.append("g") // Append the labels to the `<g>` container
+            g.append("g")
                 .selectAll("text")
                 .data(root.leaves())
                 .join("text")
                 .attr("dy", ".31em")
                 .attr("transform", d => `
                     rotate(${d.x - 90}) 
-                    translate(${d.y + 4},0)
+                    translate(${d.y + 10},0)
                     ${d.x < 180 ? "" : "rotate(180)"}
                 `)
                 .attr("text-anchor", d => d.x < 180 ? "start" : "end")
                 .text(d => d.data.name)
                 .attr("fill", d => redlistColor(d.data.redlistCategory || "Least Concern"))
                 .on("mouseover", function (event, d) {
-                    // Use event.target to ensure we select the correct element
                     d3.select(event.target).classed("label--active", true);
                 })
                 .on("mouseout", function (event, d) {
                     d3.select(event.target).classed("label--active", false);
                 })
                 .on("click", function (event, d) {
-                    // Add your click action here
                     alert(`You clicked on: ${d.data.name}`);
                 });
         }).catch(error => {
