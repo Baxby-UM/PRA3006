@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phylogenetic Tree of Marine Species</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .link--active {
+            stroke: #000 !important;
+            stroke-width: 1.5px;
+        }
+        .label--active {
+            font-weight: bold;
+        }
+        svg {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Phylogenetic Tree of Marine Species</h1>
+    <p>This visualization represents marine species as a phylogenetic tree, with nodes colored according to their IUCN Redlist conservation status.</p>
+    <div id="tree-container"></div>
+
+    <script>
+        // Set up the dimensions
+        const width = Math.min(window.innerWidth, 1200); // Responsive width, with a max limit
+        const outerRadius = width / 2;
+        const innerRadius = outerRadius - 170;
+
+        // Create a color scale for the IUCN conservation status
+        const redlistColor = d3.scaleOrdinal()
+            .domain(["Least Concern", "Near Threatened", "Vulnerable", "Endangered", "Critically Endangered", "Extinct in the Wild", "Extinct"])
+            .range(["#66c2a5", "#fee08b", "#fdae61", "#f46d43", "#d73027", "#542788", "#000000"]);
+
+        // Create the SVG element inside the container
+        const svg = d3.select("#tree-container")
+            .append("svg")
+            .attr("viewBox", [-outerRadius, -outerRadius, width, width])
+            .attr("preserveAspectRatio", "xMidYMid meet")
+            .attr("font-family", "sans-serif")
+            .attr("font-size", 10);
+
+        // Create a group element (`g`) to hold all elements (nodes and links)
+        const g = svg.append("g");
+
+        // Set up zoom behavior
+        const zoom = d3.zoom()
+            .scaleExtent([0.5, 10]) // Allow zooming out to half size and in up to 10x
+            .on("zoom", (event) => {
+                g.attr("transform", event.transform); // Apply zoom to the `<g>` container
+            });
+
+        // Attach the zoom behavior to the SVG
+        svg.call(zoom);
+
+        // Load the data from the JSON file
+        d3.json("marine_species_tree.json").then(data => {
+            // Create the root hierarchy node
+            const root = d3.hierarchy(data)
+                .sum(d => d.children ? 0 : 1)
+                .sort((a, b) => d3.ascending(a.data.name, b.data.name));
+
+            // Set up the cluster layout
+            const cluster = d3.cluster()
+                .size([360, innerRadius]);
+
+            cluster(root);
+
+            // Draw the links between nodes
+            g.append("g") // Append the links to the `<g>` container
+                .attr("fill", "none")
+                .attr("stroke", "#555")
+                .attr("stroke-opacity", 0.4)
+                .attr("stroke-width", 1.5)
+                .selectAll("path")
+                .data(root.links())
+                .join("path")
+                .attr("d", d3.linkRadial()
+                    .angle(d => d.x / 180 * Math.PI)
+                    .radius(d => d.y))
+                .attr("stroke", d => redlistColor(d.target.data.redlistCategory || "Least Concern"));
+
+            // Draw the nodes (labels)
+            g.append("g") // Append the labels to the `<g>` container
+                .selectAll("text")
+                .data(root.leaves())
+                .join("text")
+                .attr("dy", ".31em")
+                .attr("transform", d => `
+                    rotate(${d.x - 90}) 
+                    translate(${d.y + 4},0)
+                    ${d.x < 180 ? "" : "rotate(180)"}
+                `)
+                .attr("text-anchor", d => d.x < 180 ? "start" : "end")
+                .text(d => d.data.name)
+                .attr("fill", d => redlistColor(d.data.redlistCategory || "Least Concern"))
+                .on("mouseover", function (event, d) {
+                    // Use event.target to ensure we select the correct element
+                    d3.select(event.target).classed("label--active", true);
+                })
+                .on("mouseout", function (event, d) {
+                    d3.select(event.target).classed("label--active", false);
+                })
+                .on("click", function (event, d) {
+                    // Add your click action here
+                    alert(`You clicked on: ${d.data.name}`);
+                });
+        }).catch(error => {
+            console.error("Error loading the JSON file: ", error);
+            alert("Failed to load the JSON file. Please make sure it is in the correct directory and formatted properly.");
+        });
+    </script>
+</body>
+</html>
