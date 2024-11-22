@@ -1,15 +1,17 @@
+PREFIX pra: <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/>
+
 SELECT ?name ?species ?genus ?family ?class ?order ?phylum ?kingdom ?redlist ?trend ?animalID
 WHERE 
 {
   ?animalID      
-  		  <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/scientificName> ?name ;
-        <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/kingdomName> ?kingdom ;
-        <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/phylumName> ?phylum ;
-        <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/orderName> ?order ;
-        <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/className> ?class ;
-        <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/familyName> ?family ;
-        <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/genusName> ?genus ;
-        <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/speciesName> ?species ;
-        <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/redlistCategory> ?redlist ;
-        <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/populationTrend> ?trend .
+      pra:scientificName ?name ;
+      pra:kingdomName ?kingdom ;
+      pra:phylumName ?phylum ;
+      pra:orderName ?order ;
+      pra:className ?class ;
+      pra:familyName ?family ;
+      pra:genusName ?genus ;
+      pra:speciesName ?species ;
+      pra:redlistCategory ?redlist ;
+      pra:populationTrend ?trend .
 }
