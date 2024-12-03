@@ -18,7 +18,7 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            background: #e7eff8
+            background: #e7eff8;
             color: white;
         }
 
@@ -75,6 +75,7 @@
             gap: 20px;
             justify-content: center;
             margin-top: 40px;
+            margin-bottom:10px;
             width: 100%;
         }
         .bottom-buttons button {
@@ -120,6 +121,13 @@
             text-align: center;
             margin-top: 50px;
             font-size: 1.2em;
+            color: #003366; /* Dark Blue text color */
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            height: calc(100vh - 160px); /* Adjust to leave space for header and footer */
         }
 
         /* Footer */
@@ -179,7 +187,7 @@
     <div class="spacer"></div>
 
     <!-- Home Content -->
-    <div id="home-content">
+    <div id="home-content" style=""display: block;""> <!--initially visible-->
         <div class="bottom-buttons">
             <button>Taxonomy</button>
             <button onclick="toggleLegend('rate-legend')">Rate</button>
@@ -202,8 +210,16 @@
     </div>
 
     <!-- About Content -->
-    <div id="about-content" class="about-content">
-        <p>This is the About page. Add your content here.</p>
+    <div id="about-content" class="about-content" style="display: none"> <!--initially hidden-->
+        <div>
+            <h2>About Our Project</h2>
+            <p>
+                Marine biodiversity is essential to the health of global ecosystems, yet many marine species face increasing threats due to climate change, overfishing, habitat loss, and pollution. Understanding whether closely related marine species share similar levels of extinction risk is crucial for refining conservation strategies. Closely related species, such as those within the same genus or family, often share traits or ecological niches that could make them vulnerable to similar threats. The IUCN Red List categorizes species based on their extinction risk, from <strong>Least Concern (LC)</strong> to <strong>Critically Endangered (CR)</strong> and <strong>Extinct (EX)</strong>. Examining the relationship between evolutionary relatedness and threat levels can reveal patterns of shared vulnerability, offering predictive insights for species assessments.
+            </p>
+            <p>
+                This research has significant implications for biodiversity conservation. If related species show similar risk levels, targeted protection efforts can have broader impacts, benefiting entire taxonomic groups. Additionally, understanding these patterns contributes to global conservation efforts by identifying priorities for intervention and resource allocation. By focusing on marine species, this project aims to shed light on the evolutionary dimensions of extinction risk and provide actionable insights for preserving marine ecosystems.
+            </p>
+        </div>
     </div>
 
     <!-- Footer -->
@@ -213,3 +229,4 @@
 
 </body>
 </html>
+
