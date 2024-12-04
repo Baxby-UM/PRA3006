@@ -36,7 +36,6 @@
     <div id="tree-container"></div>
 
     <script>
-        // SPARQL Query for fetching families
         const sparqlQueryFamilies = `
             PREFIX pra: <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/>
             SELECT ?family ?class ?order ?phylum ?kingdom
@@ -50,7 +49,6 @@
             }
         `;
 
-        // SPARQL Query for fetching species
         const sparqlQuerySpecies = `
             PREFIX pra: <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/>
             SELECT ?name ?species ?genus ?family ?redlist ?trend
@@ -98,7 +96,7 @@
 
         async function fetchSpeciesData() {
             const endpointUrl = 'http://localhost:9999/blazegraph/sparql';
-            const encodedQuery = encodeURIComponent(sparqlQuerySpecies); // No filter, fetching all species
+            const encodedQuery = encodeURIComponent(sparqlQuerySpecies);
             try {
                 const response = await fetch(`${endpointUrl}?query=${encodedQuery}`, {
                     headers: {
@@ -127,7 +125,6 @@
             }
         }
 
-        // Draw the Family Tree
         async function drawTree() {
             const data = await fetchData(sparqlQueryFamilies);
             if (!data || data.length === 0) {
@@ -148,7 +145,6 @@
                 const order = species.order;
                 const family = species.family;
 
-                // Assign a color to each unique order
                 if (!orderColors[order]) {
                     orderColors[order] = colorScale(Object.keys(orderColors).length);
                 }
@@ -169,7 +165,6 @@
             createTree(rootData, orderColors);
         }
 
-        // Create Tree Visualization
         function createTree(rootData, orderColors) {
             const width = Math.min(window.innerWidth, 3300);
             const outerRadius = Math.min(width / 2, 3000);
@@ -210,10 +205,9 @@
                     .angle(d => d.x / 180 * Math.PI)
                     .radius(d => d.y))
                 .attr("stroke", d => {
-                    return orderColors[d.target.parent.data.name] || "#555"; // Default color if not found
+                    return orderColors[d.target.parent.data.name] || "#555";
                 });
 
-            // Draw nodes (labels)
             g.append("g")
                 .selectAll("text")
                 .data(root.leaves())
@@ -233,38 +227,43 @@
                     d3.select(event.target).classed("label--active", false);
                 })
                 .on("click", async function (event, d) {
-                    // Load species tree on family click
-                    console.log(`Fetching species for family: ${d.data.name}`); // Debugging line
-                    const speciesData = await fetchSpeciesData(); // Fetch all species data
-
-                    const familySpecies = speciesData.filter(species => species.family === d.data.name); // Filter by the clicked family
-                    console.log(`Species found: ${JSON.stringify(familySpecies)}`); // Debugging line
+                    const speciesData = await fetchSpeciesData();
+                    const familySpecies = speciesData.filter(species => species.family === d.data.name);
 
                     if (familySpecies && familySpecies.length > 0) {
+                        const genusMap = {};
+                        familySpecies.forEach(species => {
+                            if (!genusMap[species.genus]) {
+                                genusMap[species.genus] = [];
+                            }
+                            genusMap[species.genus].push(species.name); // Use 'name' for scientific name
+                        });
+
                         const speciesRoot = {
-                            name: d.data.name,
-                            children: familySpecies.map(species => ({
-                                name: `${species.genus} ${species.species}`,
-                                children: [] // You can add more detail here if needed
+                            name: d.data.name, // This is the family name now
+                            children: Object.entries(genusMap).map(([genus, speciesArray]) => ({
+                                name: genus,
+                                children: speciesArray.map(scientificName => ({
+                                    name: scientificName
+                                }))
                             }))
                         };
 
-                        createSpeciesTree(speciesRoot); // Pass the species data to create the species tree
-                        document.getElementById("backButton").style.display = "inline"; // Show back button
+                        createSpeciesTree(speciesRoot);
+                        document.getElementById("backButton").style.display = "inline";
                     } else {
                         alert("No species found for this family.");
                     }
                 });
         }
 
-        // Create Species Tree Visualization
         function createSpeciesTree(speciesRoot) {
             const width = Math.min(window.innerWidth, 3300);
             const outerRadius = Math.min(width / 2, 3000);
             const innerRadius = outerRadius - 200;
 
             const svg = d3.select("#tree-container").select("svg");
-            svg.selectAll("*").remove(); // Clear existing tree before drawing the species tree
+            svg.selectAll("*").remove();
 
             const g = svg.append("g");
 
@@ -276,14 +275,6 @@
                 .sort((a, b) => d3.ascending(a.data.name, b.data.name));
 
             cluster(root);
-
-            const zoom = d3.zoom()
-                .scaleExtent([0.5, 3])
-                .on("zoom", (event) => {
-                    g.attr("transform", event.transform);
-                });
-
-            svg.call(zoom);
 
             g.append("g")
                 .attr("fill", "none")
@@ -297,7 +288,6 @@
                     .radius(d => d.y))
                 .attr("stroke", "#555");
 
-            // Draw nodes (labels)
             g.append("g")
                 .selectAll("text")
                 .data(root.leaves())
@@ -309,22 +299,16 @@
                     ${d.x < 180 ? "" : "rotate(180)"}
                 `)
                 .attr("text-anchor", d => d.x < 180 ? "start" : "end")
-                .text(d => d.data.name)
-                .on("mouseover", function (event) {
-                    d3.select(event.target).classed("label--active", true);
-                })
-                .on("mouseout", function (event) {
-                    d3.select(event.target).classed("label--active", false);
-                });
+                .text(d => d.data.name);
+
         }
 
-        // Back button functionality
-        document.getElementById("backButton").addEventListener("click", () => {
-            document.getElementById("backButton").style.display = "none"; // Hide back button
-            drawTree(); // Redraw the family tree
+        document.getElementById("backButton").addEventListener("click", function () {
+            document.getElementById("backButton").style.display = "none";
+            d3.select("#tree-container").select("svg").remove();
+            drawTree();
         });
 
-        // Initial drawing of the family tree
         drawTree();
     </script>
 </body>
