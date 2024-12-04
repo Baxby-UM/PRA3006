@@ -1,3 +1,9 @@
+Find this repository at: https://github.com/Baxby-UM/PRA3006
+
+This code shows an interactive phylogenetic tree of all Endangered or worse marine species from the XX marine atlas.
+Follow these steps to get it operational.
+
+
 Installing nescesarry software:
 	1. Google Chrome : https://www.google.com/chrome/?brand=JJTC&ds_kid=43700052282304883&gad_source=1&gclid=CjwKCAiA9IC6BhA3EiwAsbltOEw2CM_BdX4WJ9zMpAKAwnwSWUpEw6BL2hp8SfosWEL2h10qO1IBAhoCQ_sQAvD_BwE&gclsrc=aw.ds
 	2. Java : https://www.java.com/download/ie_manual.jsp
