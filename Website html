@@ -203,9 +203,9 @@
 
         <div id="assessment-legend" class="legend-container">
             <legend>Assessment </legend>
-            <label><input type="checkbox"> Option 1</label>
-            <label><input type="checkbox"> Option 2</label>
-            <label><input type="checkbox"> Option 3</label>
+            <label><input type="checkbox"> Vulnurable</label>
+            <label><input type="checkbox"> Endengered</label>
+            <label><input type="checkbox"> Critically endengered</label>
         </div>
     </div>
 
@@ -229,4 +229,7 @@
 
 </body>
 </html>
+
+
+%vulnurable to endengered 
 
