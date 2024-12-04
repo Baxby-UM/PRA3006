@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Meta and Title -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Dying Blue - Phylogenetic Tree of Marine Species</title>
+
+    <!-- Fonts and D3.js -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Merriweather:wght@700&display=swap" rel="stylesheet">
     <script src="https://d3js.org/d3.v6.min.js"></script>
+
+    <!-- Styles -->
     <style>
         /* Reset and font */
         * {
@@ -21,6 +26,7 @@
             min-height: 100vh;
             background: linear-gradient(to bottom, #1e81b0, #003366);
             color: white;
+            position: relative;
         }
 
         /* Header */
@@ -126,6 +132,7 @@
             margin-top: 50px;
             width: 90%;
             max-width: 1200px;
+            position: relative;
         }
         svg {
             width: 100%;
@@ -133,6 +140,19 @@
         }
         text {
             font-size: 12px;
+        }
+
+        /* Tooltip */
+        #tooltip {
+            position: absolute;
+            text-align: left;
+            padding: 10px;
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            border-radius: 4px;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 10;
         }
 
         /* Footer */
@@ -154,7 +174,18 @@
                 width: 80%;
             }
         }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 2em;
+            }
+            .tree-container {
+                margin-top: 20px;
+            }
+        }
     </style>
+
+    <!-- Scripts -->
     <script>
         // Toggle visibility of legends
         function toggleLegend(legendId) {
@@ -193,335 +224,420 @@
 
     <!-- Home Content -->
     <div id="home-content">
-        
+
         <!-- Tree Container -->
         <div id="tree-container" class="tree-container">
             <h1>Phylogenetic Tree of Marine Species</h1>
             <p>This visualization represents marine species as a phylogenetic tree, with lines colored according to their taxonomic order.</p>
+
+            <!-- Family Name Display -->
+            <h2 id="family-name" style="text-align: center; margin-top: 20px;"></h2>
+
+            <!-- Back Button -->
+            <div id="backButton" style="display:none; text-align: center; margin-top: 20px;">
+                <button onclick="goBackToMainTree()">Back to Main Tree</button>
+            </div>
         </div>
 
+        <!-- Tooltip -->
+        <div id="tooltip"></div>
+
         <script>
-        const sparqlQueryFamilies = `
-            PREFIX pra: <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/>
-            SELECT ?family ?class ?order ?phylum ?kingdom
-            WHERE {
-                ?animalID 
-                    pra:kingdomName ?kingdom ;
-                    pra:phylumName ?phylum ;
-                    pra:orderName ?order ;
-                    pra:className ?class ;
-                    pra:familyName ?family ;
-            }
-        `;
+            // SPARQL Queries
+            const sparqlQueryFamilies = `
+                PREFIX pra: <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/>
+                SELECT ?family ?class ?order ?phylum ?kingdom
+                WHERE {
+                    ?animalID 
+                        pra:kingdomName ?kingdom ;
+                        pra:phylumName ?phylum ;
+                        pra:orderName ?order ;
+                        pra:className ?class ;
+                        pra:familyName ?family ;
+                }
+            `;
 
-        const sparqlQuerySpecies = `
-            PREFIX pra: <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/>
-            SELECT ?name ?species ?genus ?family ?redlist ?trend
-            WHERE {
-                ?animalID      
-                    pra:scientificName ?name ;
-                    pra:familyName ?family ;
-                    pra:genusName ?genus ;
-                    pra:speciesName ?species ;
-                    pra:redlistCategory ?redlist ;
-                    pra:populationTrend ?trend .
-            }
-        `;
+            const sparqlQuerySpecies = `
+                PREFIX pra: <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/>
+                SELECT ?name ?species ?genus ?family ?redlist ?trend
+                WHERE {
+                    ?animalID      
+                        pra:scientificName ?name ;
+                        pra:familyName ?family ;
+                        pra:genusName ?genus ;
+                        pra:speciesName ?species ;
+                        pra:redlistCategory ?redlist ;
+                        pra:populationTrend ?trend .
+                }
+            `;
 
-        async function fetchData(query) {
-            const endpointUrl = 'http://localhost:9999/blazegraph/sparql';
-            const encodedQuery = encodeURIComponent(query);
-            
-            try {
-                const response = await fetch(`${endpointUrl}?query=${encodedQuery}`, {
-                    headers: {
-                        'Accept': 'application/json'
+            // Fetch Data Functions
+            async function fetchData(query) {
+                const endpointUrl = 'http://localhost:9999/blazegraph/sparql';
+                const encodedQuery = encodeURIComponent(query);
+
+                try {
+                    const response = await fetch(`${endpointUrl}?query=${encodedQuery}`, {
+                        headers: {
+                            'Accept': 'application/sparql-results+json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('Error response:', errorText);
+                        throw new Error(`SPARQL query failed: ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    return data.results.bindings.map(d => ({
+                        family: d.family.value,
+                        class: d.class.value,
+                        order: d.order.value,
+                        phylum: d.phylum.value,
+                        kingdom: d.kingdom.value
+                    }));
+                } catch (error) {
+                    console.error("Error fetching data: ", error);
+                    alert("Failed to fetch data. Error: " + error.message);
+                }
+            }
+
+            async function fetchSpeciesData() {
+                const endpointUrl = 'http://localhost:9999/blazegraph/sparql';
+                const encodedQuery = encodeURIComponent(sparqlQuerySpecies);
+                try {
+                    const response = await fetch(`${endpointUrl}?query=${encodedQuery}`, {
+                        headers: {
+                            'Accept': 'application/sparql-results+json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('Error response:', errorText);
+                        throw new Error(`SPARQL query failed: ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    const selectedRates = getSelectedRates();
+                    const selectedCategories = getSelectedCategories();
+
+                    return data.results.bindings.filter(d => {
+                        const trend = d.trend.value.toLowerCase();
+                        const redlist = d.redlist.value;
+
+                        const trendMatch = (selectedRates.increasing && trend === 'increasing') ||
+                                           (selectedRates.decreasing && trend === 'decreasing') ||
+                                           (selectedRates.stable && trend === 'stable') ||
+                                           (selectedRates.unknown && (trend === 'unknown' || trend === ''));
+
+                        const categoryMatch = selectedCategories.includes(redlist);
+
+                        return trendMatch && categoryMatch;
+                    }).map(d => ({
+                        name: d.name.value,
+                        species: d.species.value,
+                        genus: d.genus.value,
+                        family: d.family.value,
+                        redlist: d.redlist.value,
+                        trend: d.trend.value
+                    }));
+                } catch (error) {
+                    console.error("Error fetching species data: ", error);
+                    alert("Failed to fetch species data. Error: " + error.message);
+                }
+            }
+
+            // Get Selected Filters
+            function getSelectedRates() {
+                return {
+                    increasing: document.getElementById('increasingRate').checked,
+                    decreasing: document.getElementById('decreasingRate').checked,
+                    stable: document.getElementById('stableRate').checked,
+                    unknown: document.getElementById('unknownRate').checked,
+                };
+            }
+
+            function getSelectedCategories() {
+                const categories = [];
+                if (document.getElementById('leastConcern').checked) categories.push('Least Concern');
+                if (document.getElementById('nearThreatened').checked) categories.push('Near Threatened');
+                if (document.getElementById('vulnerable').checked) categories.push('Vulnerable');
+                if (document.getElementById('endangered').checked) categories.push('Endangered');
+                if (document.getElementById('criticallyEndangered').checked) categories.push('Critically Endangered');
+                if (document.getElementById('extinct').checked) categories.push('Extinct');
+                return categories;
+            }
+
+            // Draw Main Tree
+            async function drawTree() {
+                const data = await fetchData(sparqlQueryFamilies);
+                if (!data || data.length === 0) {
+                    alert("No data returned from the query.");
+                    return;
+                }
+
+                const rootData = {
+                    name: "Root",
+                    children: []
+                };
+
+                const uniqueFamilies = new Set();
+                const orderColors = {};
+                const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+
+                data.forEach(species => {
+                    const order = species.order;
+                    const family = species.family;
+
+                    if (!orderColors[order]) {
+                        orderColors[order] = colorScale(Object.keys(orderColors).length);
+                    }
+
+                    if (!uniqueFamilies.has(family)) {
+                        uniqueFamilies.add(family);
+
+                        let orderNode = rootData.children.find(child => child.name === order);
+                        if (!orderNode) {
+                            orderNode = { name: order, children: [] };
+                            rootData.children.push(orderNode);
+                        }
+
+                        orderNode.children.push({ name: family });
                     }
                 });
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('Error response:', errorText);
-                    throw new Error(`Network response was not ok: ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                return data.results.bindings.map(d => ({
-                    family: d.family.value,
-                    class: d.class.value,
-                    order: d.order.value,
-                    phylum: d.phylum.value,
-                    kingdom: d.kingdom.value
-                }));
-            } catch (error) {
-                console.error("Error fetching data: ", error);
-                alert("Failed to fetch data. Please check the console for more details.");
-            }
-        }
-
-        async function fetchSpeciesData() {
-            const endpointUrl = 'http://localhost:9999/blazegraph/sparql';
-            const encodedQuery = encodeURIComponent(sparqlQuerySpecies);
-            try {
-                const response = await fetch(`${endpointUrl}?query=${encodedQuery}`, {
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('Error response:', errorText);
-                    throw new Error(`Network response was not ok: ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                return data.results.bindings.map(d => ({
-                    name: d.name.value,
-                    species: d.species.value,
-                    genus: d.genus.value,
-                    family: d.family.value,
-                    redlist: d.redlist.value,
-                    trend: d.trend.value
-                }));
-            } catch (error) {
-                console.error("Error fetching species data: ", error);
-                alert("Failed to fetch species data. Please check the console for more details.");
-            }
-        }
-
-        async function drawTree() {
-            const data = await fetchData(sparqlQueryFamilies);
-            if (!data || data.length === 0) {
-                alert("No data returned from the query.");
-                return;
+                createTree(rootData, orderColors);
             }
 
-            const rootData = {
-                name: "Root",
-                children: []
-            };
+            // Create Main Tree
+            function createTree(rootData, orderColors) {
+                const width = Math.min(window.innerWidth, 3300);
+                const outerRadius = Math.min(width / 2, 3000);
+                const innerRadius = outerRadius - 200;
 
-            const uniqueFamilies = new Set();
-            const orderColors = {};
-            const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+                const svg = d3.select("#tree-container")
+                    .append("svg")
+                    .attr("viewBox", [-outerRadius, -outerRadius, width, width])
+                    .attr("preserveAspectRatio", "xMidYMid meet");
 
-            data.forEach(species => {
-                const order = species.order;
-                const family = species.family;
+                const g = svg.append("g");
 
-                if (!orderColors[order]) {
-                    orderColors[order] = colorScale(Object.keys(orderColors).length);
-                }
+                const cluster = d3.cluster()
+                    .size([360, innerRadius]);
 
-                if (!uniqueFamilies.has(family)) {
-                    uniqueFamilies.add(family);
+                const root = d3.hierarchy(rootData)
+                    .sum(d => d.children ? 0 : 1)
+                    .sort((a, b) => d3.ascending(a.data.name, b.data.name));
 
-                    let orderNode = rootData.children.find(child => child.name === order);
-                    if (!orderNode) {
-                        orderNode = { name: order, children: [] };
-                        rootData.children.push(orderNode);
-                    }
+                cluster(root);
 
-                    orderNode.children.push({ name: family });
-                }
-            });
+                const zoom = d3.zoom()
+                    .scaleExtent([0.5, 3])
+                    .on("zoom", (event) => {
+                        g.attr("transform", event.transform);
+                    });
 
-            createTree(rootData, orderColors);
-        }
+                svg.call(zoom);
 
-        function createTree(rootData, orderColors) {
-            const width = Math.min(window.innerWidth, 3300);
-            const outerRadius = Math.min(width / 2, 3000);
-            const innerRadius = outerRadius - 200;
+                g.append("g")
+                    .attr("fill", "none")
+                    .attr("stroke-opacity", 0.4)
+                    .attr("stroke-width", 1.5)
+                    .selectAll("path")
+                    .data(root.links())
+                    .join("path")
+                    .attr("d", d3.linkRadial()
+                        .angle(d => d.x / 180 * Math.PI)
+                        .radius(d => d.y))
+                    .attr("stroke", d => {
+                        return orderColors[d.target.parent.data.name] || "#555";
+                    });
 
-            const svg = d3.select("#tree-container")
-                .append("svg")
-                .attr("viewBox", [-outerRadius, -outerRadius, width, width])
-                .attr("preserveAspectRatio", "xMidYMid meet");
+                g.append("g")
+                    .selectAll("text")
+                    .data(root.leaves())
+                    .join("text")
+                    .attr("dy", ".31em")
+                    .attr("transform", d => `
+                        rotate(${d.x - 90}) 
+                        translate(${d.y + 10},0)
+                        ${d.x < 180 ? "" : "rotate(180)"}
+                    `)
+                    .attr("text-anchor", d => d.x < 180 ? "start" : "end")
+                    .text(d => d.data.name)
+                    .on("mouseover", function (event, d) {
+                        d3.select(this).classed("label--active", true);
+                    })
+                    .on("mouseout", function (event, d) {
+                        d3.select(this).classed("label--active", false);
+                    })
+                    .on("click", async function (event, d) {
+                        const speciesData = await fetchSpeciesData();
+                        const familySpecies = speciesData.filter(species => species.family === d.data.name);
 
-            const g = svg.append("g");
+                        if (familySpecies && familySpecies.length > 0) {
+                            // Set the family name above the tree
+                            d3.select("#family-name").text(d.data.name);
 
-            const cluster = d3.cluster()
-                .size([360, innerRadius]);
-
-            const root = d3.hierarchy(rootData)
-                .sum(d => d.children ? 0 : 1)
-                .sort((a, b) => d3.ascending(a.data.name, b.data.name));
-
-            cluster(root);
-
-            const zoom = d3.zoom()
-                .scaleExtent([0.5, 3])
-                .on("zoom", (event) => {
-                    g.attr("transform", event.transform);
-                });
-
-            svg.call(zoom);
-
-            g.append("g")
-                .attr("fill", "none")
-                .attr("stroke-opacity", 0.4)
-                .attr("stroke-width", 1.5)
-                .selectAll("path")
-                .data(root.links())
-                .join("path")
-                .attr("d", d3.linkRadial()
-                    .angle(d => d.x / 180 * Math.PI)
-                    .radius(d => d.y))
-                .attr("stroke", d => {
-                    return orderColors[d.target.parent.data.name] || "#555";
-                });
-
-            g.append("g")
-                .selectAll("text")
-                .data(root.leaves())
-                .join("text")
-                .attr("dy", ".31em")
-                .attr("transform", d => `
-                    rotate(${d.x - 90}) 
-                    translate(${d.y + 10},0)
-                    ${d.x < 180 ? "" : "rotate(180)"}
-                `)
-                .attr("text-anchor", d => d.x < 180 ? "start" : "end")
-                .text(d => d.data.name)
-                .on("mouseover", function (event) {
-                    d3.select(event.target).classed("label--active", true);
-                })
-                .on("mouseout", function (event) {
-                    d3.select(event.target).classed("label--active", false);
-                })
-                .on("click", async function (event, d) {
-                    const speciesData = await fetchSpeciesData();
-                    const familySpecies = speciesData.filter(species => species.family === d.data.name);
-
-                    if (familySpecies && familySpecies.length > 0) {
-                        // Set the family name above the tree
-                        d3.select("#family-name").text(d.data.name);
-
-                        const genusMap = {};
-                        familySpecies.forEach(species => {
-                            if (!genusMap[species.genus]) {
-                                genusMap[species.genus] = {
-                                    name: species.genus,
-                                    children: []
-                                };
-                            }
-                            genusMap[species.genus].children.push({
-                                name: species.name,
-                                redlist: species.redlist,
-                                trend: species.trend
+                            const genusMap = {};
+                            familySpecies.forEach(species => {
+                                if (!genusMap[species.genus]) {
+                                    genusMap[species.genus] = {
+                                        name: species.genus,
+                                        children: []
+                                    };
+                                }
+                                genusMap[species.genus].children.push({
+                                    name: species.name,
+                                    redlist: species.redlist,
+                                    trend: species.trend
+                                });
                             });
-                        });
 
-                        const speciesRoot = {
-                            name: "Species",
-                            children: Object.values(genusMap)
-                        };
+                            const speciesRoot = {
+                                name: "Species",
+                                children: Object.values(genusMap)
+                            };
 
-                        createSpeciesTree(speciesRoot);
-                        document.getElementById("backButton").style.display = "block";
-                    }
-                });
-        }
+                            createSpeciesTree(speciesRoot);
+                            document.getElementById("backButton").style.display = "block";
+                        } else {
+                            alert("No species data available for this family based on the selected filters.");
+                        }
+                    });
+            }
 
-        function createSpeciesTree(speciesRoot) {
-            d3.select("#tree-container").select("svg").remove();
+            // Create Species Tree
+            function createSpeciesTree(speciesRoot) {
+                d3.select("#tree-container").select("svg").remove();
 
-            const width = Math.min(window.innerWidth, 3300);
-            const outerRadius = Math.min(width / 2, 3000);
-            const innerRadius = outerRadius - 200;
+                const width = Math.min(window.innerWidth, 3300);
+                const outerRadius = Math.min(width / 2, 3000);
+                const innerRadius = outerRadius - 200;
 
-            const svg = d3.select("#tree-container")
-                .append("svg")
-                .attr("viewBox", [-outerRadius, -outerRadius, width, width])
-                .attr("preserveAspectRatio", "xMidYMid meet");
+                const svg = d3.select("#tree-container")
+                    .append("svg")
+                    .attr("viewBox", [-outerRadius, -outerRadius, width, width])
+                    .attr("preserveAspectRatio", "xMidYMid meet");
 
-            const g = svg.append("g");
+                const g = svg.append("g");
 
-            const cluster = d3.cluster()
-                .size([360, innerRadius]);
+                const cluster = d3.cluster()
+                    .size([360, innerRadius]);
 
-            const root = d3.hierarchy(speciesRoot)
-                .sum(d => d.children ? 0 : 1)
-                .sort((a, b) => d3.ascending(a.data.name, b.data.name));
+                const root = d3.hierarchy(speciesRoot)
+                    .sum(d => d.children ? 0 : 1)
+                    .sort((a, b) => d3.ascending(a.data.name, b.data.name));
 
-            cluster(root);
+                cluster(root);
 
-            const zoom = d3.zoom()
-                .scaleExtent([0.5, 3])
-                .on("zoom", (event) => {
-                    g.attr("transform", event.transform);
-                });
+                const zoom = d3.zoom()
+                    .scaleExtent([0.5, 3])
+                    .on("zoom", (event) => {
+                        g.attr("transform", event.transform);
+                    });
 
-            svg.call(zoom);
+                svg.call(zoom);
 
-            g.append("g")
-                .attr("fill", "none")
-                .attr("stroke-opacity", 0.4)
-                .attr("stroke-width", 1.5)
-                .selectAll("path")
-                .data(root.links())
-                .join("path")
-                .attr("d", d3.linkRadial()
-                    .angle(d => d.x / 180 * Math.PI)
-                    .radius(d => d.y))
-                .attr("stroke", "#555");
+                const tooltip = d3.select("#tooltip");
 
-            const tooltip = d3.select("#tooltip");
+                g.append("g")
+                    .attr("fill", "none")
+                    .attr("stroke-opacity", 0.4)
+                    .attr("stroke-width", 1.5)
+                    .selectAll("path")
+                    .data(root.links())
+                    .join("path")
+                    .attr("d", d3.linkRadial()
+                        .angle(d => d.x / 180 * Math.PI)
+                        .radius(d => d.y))
+                    .attr("stroke", "#555");
 
-            g.append("g")
-                .selectAll("text")
-                .data(root.leaves())
-                .join("text")
-                .attr("dy", ".31em")
-                .attr("transform", d => `
-                    rotate(${d.x - 90}) 
-                    translate(${d.y + 10},0)
-                    ${d.x < 180 ? "" : "rotate(180)"}
-                `)
-                .attr("text-anchor", d => d.x < 180 ? "start" : "end")
-                .text(d => d.data.name)
-                .on("mouseover", function (event, d) {
-                    tooltip.transition().duration(200).style("opacity", .9);
-                    tooltip.html(`IUCN Threat Category: ${d.data.redlist}<br>Trend: ${d.data.trend}`)
-                        .style("left", (event.pageX + 5) + "px")
-                        .style("top", (event.pageY - 28) + "px");
-                })
-                .on("mouseout", function () {
-                    tooltip.transition().duration(500).style("opacity", 0);
-                });
+                g.append("g")
+                    .selectAll("text")
+                    .data(root.leaves())
+                    .join("text")
+                    .attr("dy", ".31em")
+                    .attr("transform", d => `
+                        rotate(${d.x - 90}) 
+                        translate(${d.y + 10},0)
+                        ${d.x < 180 ? "" : "rotate(180)"}
+                    `)
+                    .attr("text-anchor", d => d.x < 180 ? "start" : "end")
+                    .text(d => d.data.name)
+                    .on("mouseover", function (event, d) {
+                        tooltip.transition().duration(200).style("opacity", .9);
+                        tooltip.html(`<strong>${d.data.name}</strong><br>IUCN Category: ${d.data.redlist}<br>Trend: ${d.data.trend}`)
+                            .style("left", (event.pageX + 5) + "px")
+                            .style("top", (event.pageY - 28) + "px");
+                    })
+                    .on("mouseout", function () {
+                        tooltip.transition().duration(500).style("opacity", 0);
+                    });
 
-            document.getElementById("backButton").addEventListener("click", function () {
+                // Update Back Button
+                document.getElementById("backButton").style.display = "block";
+            }
+
+            // Back to Main Tree Function
+            function goBackToMainTree() {
                 document.getElementById("backButton").style.display = "none";
                 d3.select("#tree-container").select("svg").remove();
                 d3.select("#family-name").text(""); // Clear family name
                 drawTree();
+            }
+
+            // Initial Draw
+            drawTree();
+
+            // Update Tree on Filter Change
+            document.querySelectorAll('.legend-container input').forEach(input => {
+                input.addEventListener('change', () => {
+                    d3.select("#tree-container").select("svg").remove();
+                    d3.select("#family-name").text(""); // Clear family name
+                    document.getElementById("backButton").style.display = "none";
+                    drawTree();
+                });
             });
-        }
+        </script>
 
-        drawTree();
-    </script>
-
+        <!-- Bottom Buttons -->
         <div class="bottom-buttons">
-            <button>Taxonomy</button>
-            <button onclick="toggleLegend('rate-legend')">Rate</button>
-            <button onclick="toggleLegend('assessment-legend')">Assessment</button>
+            <button onclick="toggleLegend('rate-legend')">Population Trend</button>
+            <button onclick="toggleLegend('assessment-legend')">IUCN Category</button>
         </div>
 
+        <!-- Legends -->
         <div id="rate-legend" class="legend-container">
-            <legend>Rate </legend>
-            <label><input type="checkbox"> Increasing rate </label>
-            <label><input type="checkbox"> Decreasing rate </label>
-            <label><input type="checkbox"> Unknown </label>
+            <legend>Population Trend</legend>
+            <label><input type="checkbox" id="increasingRate" checked> Increasing </label>
+            <label><input type="checkbox" id="decreasingRate" checked> Decreasing </label>
+            <label><input type="checkbox" id="stableRate" checked> Stable </label>
+            <label><input type="checkbox" id="unknownRate" checked> Unknown </label>
         </div>
 
         <div id="assessment-legend" class="legend-container">
-            <legend>Assessment </legend>
-            <label><input type="checkbox"> Option 1</label>
-            <label><input type="checkbox"> Option 2</label>
-            <label><input type="checkbox"> Option 3</label>
+            <legend>IUCN Category</legend>
+            <label><input type="checkbox" id="leastConcern" checked> Least Concern</label>
+            <label><input type="checkbox" id="nearThreatened" checked> Near Threatened</label>
+            <label><input type="checkbox" id="vulnerable" checked> Vulnerable</label>
+            <label><input type="checkbox" id="endangered" checked> Endangered</label>
+            <label><input type="checkbox" id="criticallyEndangered" checked> Critically Endangered</label>
+            <label><input type="checkbox" id="extinct" checked> Extinct</label>
         </div>
+    </div>
+
+    <!-- About Content -->
+    <div id="about-content" class="about-content">
+        <h2>About The Dying Blue</h2>
+        <p>
+            The Dying Blue is a project dedicated to raising awareness about the declining marine species across the globe. This interactive phylogenetic tree allows users to explore different marine species, understand their conservation status, and observe trends in their populations.
+        </p>
+        <p>
+            By visualizing this data, we hope to shed light on the urgent need for marine conservation and inspire action to protect our oceans.
+        </p>
     </div>
 
     <!-- Footer -->
