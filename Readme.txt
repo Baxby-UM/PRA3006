@@ -1,6 +1,6 @@
 Find this repository at: https://github.com/Baxby-UM/PRA3006
 
-This code shows an interactive phylogenetic tree of all Endangered or worse marine species from the XX marine atlas.
+This code shows an interactive phylogenetic tree of species across all marine regions that classify as vulnerable or worse based on data and species from the IUCN Redlist.
 Follow these steps to get it operational.
 
 
