@@ -23,10 +23,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: flex-start;
             min-height: 100vh;
             background: linear-gradient(to bottom, #1e81b0, #003366);
             color: white;
-            position: relative;
+            text-align: center;
         }
 
         /* Header */
@@ -76,57 +77,6 @@
             width: 100%;
         }
 
-        /* Bottom Buttons */
-        .bottom-buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin-top: 40px;
-            width: 100%;
-        }
-        .bottom-buttons button {
-            background-color: #1e81b0;
-            color: white;
-            font-size: 1em;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 25px;
-            box-shadow: 0 5px 15px rgba(30, 129, 176, 0.4);
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-        .bottom-buttons button:hover {
-            background-color: #145a76;
-            transform: translateY(-3px);
-        }
-
-        /* Legend */
-        .legend-container {
-            display: none;
-            margin-top: 20px;
-            width: 80%;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
-        .legend-container legend {
-            font-size: 1.2em;
-            margin-bottom: 10px;
-        }
-        .legend-container label {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            font-size: 1em;
-        }
-        .legend-color-box {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
-            border: 1px solid #fff;
-            flex-shrink: 0;
-        }
         /* About Page */
         .about-content {
             display: none;
@@ -138,16 +88,47 @@
             align-items: center;
         }
 
-        /* Tree Visualization */
+        /* Tree Container */
         .tree-container {
-            margin-top: 50px;
-            width: 90%;
-            max-width: 1200px;
-            height: 600px; /* Set a fixed height for the container */
+            margin-top: 40px;
+            width: 90vw;
+            height: 90vh;
             position: relative;
-            overflow: hidden; /* Hide overflowing content */
             border: 1px solid #1e81b0;
-            background-color: rgba(0, 0, 0, 0.1); 
+            background-color: rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 20px;
+            overflow: hidden; 
+            margin-bottom: 40px; 
+        }
+
+        .tree-title {
+            font-size: 2em;
+        }
+        .tree-description {
+            margin-top: 10px;
+            font-size: 1.2em;
+            width: 60%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* SVG Container */
+        .svg-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .tree-container text {
+            font-size: 8px; /* Decreased font size */
         }
 
         /* Tooltip */
@@ -171,18 +152,106 @@
             background-color: #003366;
             font-size: 0.9em;
             border-top: 1px solid #1e81b0;
+            margin-top: auto;
+        }
+
+        /* Bottom Buttons (Shown only at species-level) */
+        .bottom-buttons {
+            display: none;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+            width: 100%;
+        }
+        .bottom-buttons button {
+            background-color: #1e81b0;
+            color: white;
+            font-size: 1em;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            box-shadow: 0 5px 15px rgba(30, 129, 176, 0.4);
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .bottom-buttons button:hover {
+            background-color: #145a76;
+            transform: translateY(-3px);
+        }
+
+        /* Back Button for species-level */
+        #backButton {
+            display:none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        #backButton button {
+            background-color: #1e81b0;
+            color: white;
+            font-size: 1em;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            box-shadow: 0 5px 15px rgba(30, 129, 176, 0.4);
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        #backButton button:hover {
+            background-color: #145a76;
+            transform: translateY(-3px);
+        }
+
+        /* Legends (shown only at species-level) */
+        .legends-container {
+            display: none; 
+            width: 100%;
+            margin-top: 20px;
+            margin-bottom: 40px; 
+            justify-content: center;
+            gap: 50px;
+        }
+        .legend-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+        .legend-box h3 {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border: 1px solid #fff;
+            flex-shrink: 0;
+        }
+
+        /* Hover style for text nodes */
+        .tree-container text:hover {
+            font-weight: bold;
+            cursor: pointer;
         }
 
         /* Responsive Design */
         @media (max-width: 768px) {
-            .buttons-container, .bottom-buttons {
+            .buttons-container {
                 flex-direction: column;
             }
-            .buttons-container button, .bottom-buttons button {
+            .buttons-container button {
                 width: 80%;
             }
-            .legend-container {
+            .tree-description {
                 width: 90%;
+            }
+            .legends-container {
+                flex-direction: column;
+                gap: 20px;
             }
         }
 
@@ -190,19 +259,28 @@
             header h1 {
                 font-size: 2em;
             }
-            .tree-container {
-                margin-top: 20px;
-            }
         }
     </style>
 
     <!-- Scripts -->
     <script>
-        // Global Variables
-        let coloringMode = 'trend'; // Default coloring mode
-        let currentSpeciesRoot = null; // Global variable to store speciesRoot
+        let coloringMode = 'trend'; 
+        let currentSpeciesRoot = null; 
 
-        // Color Scales
+        function showHomePage() {
+            window.location.reload();
+        }
+
+        function showAboutPage() {
+            // Hide any species-level UI if visible
+            document.getElementById('backButton').style.display = 'none';
+            document.querySelector('.bottom-buttons').style.display = 'none';
+            document.querySelector('.legends-container').style.display = 'none';
+
+            document.getElementById('home-content').style.display = 'none';
+            document.getElementById('about-content').style.display = 'block';
+        }
+
         const iucnColors = {
             'Least Concern': '#4CAF50',
             'Near Threatened': '#FFEB3B',
@@ -212,44 +290,356 @@
             'Extinct': '#9E9E9E',
             'Data Deficient': '#607D8B',
             'Not Evaluated': '#9C27B0',
-            'Unknown': '#757575' // For any unspecified categories
+            'Unknown': '#757575'
         };
 
         const trendColors = {
             'Increasing': '#4CAF50',
             'Decreasing': '#F44336',
             'Stable': '#2196F3',
-            'Unknown': '#9E9E9E' // For unknown trends
+            'Unknown': '#9E9E9E'
         };
 
-        // Set Coloring Mode Function
         function setColoringMode(mode) {
             coloringMode = mode;
-            // Update legends
-            if (mode === 'iucn') {
-                document.getElementById('iucn-legend').style.display = 'block';
-                document.getElementById('trend-legend').style.display = 'none';
-            } else {
-                document.getElementById('iucn-legend').style.display = 'block';
-                document.getElementById('trend-legend').style.display = 'block';
-            }
-            // Redraw species tree if currently displayed
-            if (document.getElementById("backButton").style.display === "block") {
+            if (currentSpeciesRoot) {
                 createSpeciesTree(currentSpeciesRoot);
             }
         }
 
-        // Switch to Home content
-        function showHomePage() {
-            document.getElementById('home-content').style.display = 'block';
-            document.getElementById('about-content').style.display = 'none';
+        function goBackToMainTree() {
+            document.getElementById("backButton").style.display = "none";
+            document.querySelector('.bottom-buttons').style.display = 'none';
+            document.querySelector('.legends-container').style.display = 'none';
+
+            d3.select(".svg-container").select("svg").remove();
+            d3.select(".tree-title").text("Phylogenetic Tree of Marine Species");
+            d3.select(".tree-description").text("This visualization represents marine species as a phylogenetic tree.");
+            currentSpeciesRoot = null;
+            drawTree();
         }
 
-        // Switch to About content
-        function showAboutPage() {
-            document.getElementById('home-content').style.display = 'none';
-            document.getElementById('about-content').style.display = 'block';
+        const sparqlQueryFamilies = `
+            PREFIX pra: <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/>
+            SELECT ?family ?class ?order ?phylum ?kingdom
+            WHERE {
+                ?animalID 
+                    pra:kingdomName ?kingdom ;
+                    pra:phylumName ?phylum ;
+                    pra:orderName ?order ;
+                    pra:className ?class ;
+                    pra:familyName ?family ;
+            }
+        `;
+
+        const sparqlQuerySpecies = `
+            PREFIX pra: <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/>
+            SELECT ?name ?species ?genus ?family ?redlist ?trend
+            WHERE {
+                ?animalID      
+                    pra:scientificName ?name ;
+                    pra:familyName ?family ;
+                    pra:genusName ?genus ;
+                    pra:speciesName ?species ;
+                    pra:redlistCategory ?redlist ;
+                    pra:populationTrend ?trend .
+            }
+        `;
+
+        async function fetchData(query) {
+            const endpointUrl = 'http://localhost:9999/blazegraph/sparql';
+            const encodedQuery = encodeURIComponent(query);
+
+            try {
+                const response = await fetch(`${endpointUrl}?query=${encodedQuery}`, {
+                    headers: {
+                        'Accept': 'application/sparql-results+json'
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Error response:', errorText);
+                    throw new Error(`SPARQL query failed: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                return data.results.bindings.map(d => ({
+                    family: d.family.value,
+                    class: d.class.value,
+                    order: d.order.value,
+                    phylum: d.phylum.value,
+                    kingdom: d.kingdom.value
+                }));
+            } catch (error) {
+                console.error("Error fetching data: ", error);
+                alert("Failed to fetch data. Error: " + error.message);
+            }
         }
+
+        async function fetchSpeciesData() {
+            const endpointUrl = 'http://localhost:9999/blazegraph/sparql';
+            const encodedQuery = encodeURIComponent(sparqlQuerySpecies);
+            try {
+                const response = await fetch(`${endpointUrl}?query=${encodedQuery}`, {
+                    headers: {
+                        'Accept': 'application/sparql-results+json'
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Error response:', errorText);
+                    throw new Error(`SPARQL query failed: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                return data.results.bindings.map(d => ({
+                    name: d.name.value,
+                    species: d.species.value,
+                    genus: d.genus.value,
+                    family: d.family.value,
+                    redlist: d.redlist.value || 'Unknown',
+                    trend: capitalizeFirstLetter(d.trend.value.toLowerCase())
+                }));
+            } catch (error) {
+                console.error("Error fetching species data: ", error);
+                alert("Failed to fetch species data. Error: " + error.message);
+            }
+        }
+
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        async function drawTree() {
+            const data = await fetchData(sparqlQueryFamilies);
+            if (!data || data.length === 0) {
+                alert("No data returned from the query.");
+                return;
+            }
+
+            const rootData = {
+                name: "Root",
+                children: []
+            };
+
+            const uniqueFamilies = new Set();
+            const orderColors = {};
+            const colorScale = d3.scaleOrdinal(d3.schemeSet3);
+
+            data.forEach(species => {
+                const order = species.order;
+                const family = species.family;
+
+                if (!orderColors[order]) {
+                    orderColors[order] = colorScale(Object.keys(orderColors).length);
+                }
+
+                if (!uniqueFamilies.has(family)) {
+                    uniqueFamilies.add(family);
+
+                    let orderNode = rootData.children.find(child => child.name === order);
+                    if (!orderNode) {
+                        orderNode = { name: order, children: [] };
+                        rootData.children.push(orderNode);
+                    }
+
+                    orderNode.children.push({ name: family });
+                }
+            });
+
+            createTree(rootData, orderColors);
+        }
+
+        function createTree(rootData, orderColors) {
+            const container = d3.select(".svg-container");
+            container.select("svg").remove();
+
+            const containerNode = container.node();
+            const containerWidth = containerNode.clientWidth;
+            const containerHeight = containerNode.clientHeight;
+
+            // Increase outerRadius by dividing by a smaller number (1.5 instead of 2)
+            const outerRadius = Math.min(containerWidth, containerHeight) / 2.0;
+            const innerRadius = outerRadius - 90; // Slightly bigger gap than before
+
+            const svg = container.append("svg")
+                .attr("width", containerWidth)
+                .attr("height", containerHeight)
+                .attr("viewBox", [-outerRadius, -outerRadius, outerRadius * 2, outerRadius * 2])
+                .attr("preserveAspectRatio", "xMidYMid meet");
+
+            const g = svg.append("g");
+
+            const cluster = d3.cluster()
+                .size([360, innerRadius]);
+
+            const root = d3.hierarchy(rootData)
+                .sum(d => d.children ? 0 : 1)
+                .sort((a, b) => d3.ascending(a.data.name, b.data.name));
+
+            cluster(root);
+
+            root.each(d => { d.y = d.y * 2.5; }); // Increase factor for more spacing, decrease for less
+
+            const zoom = d3.zoom()
+                .scaleExtent([0.5, 3])
+                .on("zoom", (event) => {
+                    g.attr("transform", event.transform);
+                });
+
+            svg.call(zoom);
+
+            g.append("g")
+                .attr("fill", "none")
+                .attr("stroke-opacity", 0.8)
+                .attr("stroke-width", 1.5)
+                .selectAll("path")
+                .data(root.links())
+                .join("path")
+                .attr("d", d3.linkRadial()
+                    .angle(d => d.x / 180 * Math.PI)
+                    .radius(d => d.y))
+                .attr("stroke", d => orderColors[d.target.parent.data.name] || "#FFFFFF");
+
+            g.append("g")
+                .selectAll("text")
+                .data(root.leaves())
+                .join("text")
+                .attr("dy", ".31em")
+                .attr("transform", d => `
+                    rotate(${d.x - 90}) 
+                    translate(${d.y},0)
+                    ${d.x < 180 ? "" : "rotate(180)"}
+                `)
+                .attr("text-anchor", d => d.x < 180 ? "start" : "end")
+                .style("fill", "#FFFFFF")
+                .text(d => d.data.name)
+                .on("click", async function (event, d) {
+                    const speciesData = await fetchSpeciesData();
+                    const familySpecies = speciesData.filter(species => species.family === d.data.name);
+
+                    if (familySpecies && familySpecies.length > 0) {
+                        d3.select(".tree-title").text(d.data.name);
+                        d3.select(".tree-description").text("Explore species in this family:");
+
+                        const genusMap = {};
+                        familySpecies.forEach(species => {
+                            if (!genusMap[species.genus]) {
+                                genusMap[species.genus] = {
+                                    name: species.genus,
+                                    children: []
+                                };
+                            }
+                            genusMap[species.genus].children.push({
+                                name: species.name,
+                                redlist: species.redlist,
+                                trend: species.trend
+                            });
+                        });
+
+                        const speciesRoot = {
+                            name: "Species",
+                            children: Object.values(genusMap)
+                        };
+
+                        createSpeciesTree(speciesRoot);
+                    } else {
+                        alert("No species data available for this family.");
+                    }
+                });
+        }
+
+        function createSpeciesTree(speciesRoot) {
+            currentSpeciesRoot = speciesRoot;
+
+            const container = d3.select(".svg-container");
+            container.select("svg").remove();
+
+            const containerNode = container.node();
+            const containerWidth = containerNode.clientWidth;
+            const containerHeight = containerNode.clientHeight;
+
+            const outerRadius = Math.min(containerWidth, containerHeight) / 1.5;
+            const innerRadius = outerRadius - 150; 
+
+            const svg = container.append("svg")
+                .attr("width", containerWidth)
+                .attr("height", containerHeight)
+                .attr("viewBox", [-outerRadius, -outerRadius, outerRadius * 2, outerRadius * 2])
+                .attr("preserveAspectRatio", "xMidYMid meet");
+
+            const g = svg.append("g");
+
+            const cluster = d3.cluster()
+                .size([360, innerRadius]);
+
+            const root = d3.hierarchy(speciesRoot)
+                .sum(d => d.children ? 0 : 1)
+                .sort((a, b) => d3.ascending(a.data.name, b.data.name));
+
+            cluster(root);
+
+            const zoom = d3.zoom()
+                .scaleExtent([0.5, 3])
+                .on("zoom", (event) => {
+                    g.attr("transform", event.transform);
+                });
+
+            svg.call(zoom);
+
+            const tooltip = d3.select("#tooltip");
+
+            g.append("g")
+                .attr("fill", "none")
+                .attr("stroke-opacity", 0.8)
+                .attr("stroke-width", 1.5)
+                .selectAll("path")
+                .data(root.links())
+                .join("path")
+                .attr("d", d3.linkRadial()
+                    .angle(d => d.x / 180 * Math.PI)
+                    .radius(d => d.y))
+                .attr("stroke", "#FFFFFF");
+
+            g.append("g")
+                .selectAll("text")
+                .data(root.leaves())
+                .join("text")
+                .attr("dy", ".31em")
+                .attr("transform", d => `
+                    rotate(${d.x - 90}) 
+                    translate(${d.y + 10},0)
+                    ${d.x < 180 ? "" : "rotate(180)"}
+                `)
+                .attr("text-anchor", d => d.x < 180 ? "start" : "end")
+                .style("fill", d => {
+                    if (coloringMode === 'iucn') {
+                        return iucnColors[d.data.redlist] || iucnColors['Unknown'];
+                    } else {
+                        return trendColors[d.data.trend] || trendColors['Unknown'];
+                    }
+                })
+                .text(d => d.data.name)
+                .on("mouseover", function (event, d) {
+                    tooltip.transition().duration(200).style("opacity", .9);
+                    tooltip.html(`<strong>${d.data.name}</strong><br>IUCN Category: ${d.data.redlist}<br>Trend: ${d.data.trend}`)
+                        .style("left", (event.pageX + 5) + "px")
+                        .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mouseout", function () {
+                    tooltip.transition().duration(500).style("opacity", 0);
+                });
+
+            document.getElementById("backButton").style.display = "block";
+            document.querySelector('.bottom-buttons').style.display = 'flex';
+            document.querySelector('.legends-container').style.display = 'flex';
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            drawTree();
+        });
     </script>
 </head>
 <body>
@@ -270,441 +660,14 @@
 
     <!-- Home Content -->
     <div id="home-content">
-
-        <!-- Tree Container -->
-        <div id="tree-container" class="tree-container">
-            <h1>Phylogenetic Tree of Marine Species</h1>
-            <p>This visualization represents marine species as a phylogenetic tree, with species names colored according to the selected category.</p>
-
-            <!-- Family Name Display -->
-            <h2 id="family-name" style="text-align: center; margin-top: 20px;"></h2>
-
-            <!-- Back Button -->
-            <div id="backButton" style="display:none; text-align: center; margin-top: 20px;">
-                <button onclick="goBackToMainTree()">Back to Main Tree</button>
-            </div>
+        <div class="tree-container" id="tree-container">
+            <h2 class="tree-title">Phylogenetic Tree of Marine Species</h2>
+            <p class="tree-description">This visualization represents marine species as a phylogenetic tree.</p>
+            <div class="svg-container"></div>
         </div>
 
         <!-- Tooltip -->
         <div id="tooltip"></div>
-
-        <script>
-            // SPARQL Queries
-            const sparqlQueryFamilies = `
-                PREFIX pra: <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/>
-                SELECT ?family ?class ?order ?phylum ?kingdom
-                WHERE {
-                    ?animalID 
-                        pra:kingdomName ?kingdom ;
-                        pra:phylumName ?phylum ;
-                        pra:orderName ?order ;
-                        pra:className ?class ;
-                        pra:familyName ?family ;
-                }
-            `;
-
-            const sparqlQuerySpecies = `
-                PREFIX pra: <https://maastrichtuniversity.nl/course/PRA3006/2024/assessment/>
-                SELECT ?name ?species ?genus ?family ?redlist ?trend
-                WHERE {
-                    ?animalID      
-                        pra:scientificName ?name ;
-                        pra:familyName ?family ;
-                        pra:genusName ?genus ;
-                        pra:speciesName ?species ;
-                        pra:redlistCategory ?redlist ;
-                        pra:populationTrend ?trend .
-                }
-            `;
-
-            // Fetch Data Functions
-            async function fetchData(query) {
-                const endpointUrl = 'http://localhost:9999/blazegraph/sparql';
-                const encodedQuery = encodeURIComponent(query);
-
-                try {
-                    const response = await fetch(`${endpointUrl}?query=${encodedQuery}`, {
-                        headers: {
-                            'Accept': 'application/sparql-results+json'
-                        }
-                    });
-
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error('Error response:', errorText);
-                        throw new Error(`SPARQL query failed: ${response.statusText}`);
-                    }
-
-                    const data = await response.json();
-                    return data.results.bindings.map(d => ({
-                        family: d.family.value,
-                        class: d.class.value,
-                        order: d.order.value,
-                        phylum: d.phylum.value,
-                        kingdom: d.kingdom.value
-                    }));
-                } catch (error) {
-                    console.error("Error fetching data: ", error);
-                    alert("Failed to fetch data. Error: " + error.message);
-                }
-            }
-
-            async function fetchSpeciesData() {
-                const endpointUrl = 'http://localhost:9999/blazegraph/sparql';
-                const encodedQuery = encodeURIComponent(sparqlQuerySpecies);
-                try {
-                    const response = await fetch(`${endpointUrl}?query=${encodedQuery}`, {
-                        headers: {
-                            'Accept': 'application/sparql-results+json'
-                        }
-                    });
-
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error('Error response:', errorText);
-                        throw new Error(`SPARQL query failed: ${response.statusText}`);
-                    }
-
-                    const data = await response.json();
-                    let selectedFilters;
-                    if (coloringMode === 'trend') {
-                        selectedFilters = getSelectedTrends();
-                    } else {
-                        selectedFilters = getSelectedIUCNCategories();
-                    }
-
-                    return data.results.bindings.filter(d => {
-                        const trend = capitalizeFirstLetter(d.trend.value.toLowerCase());
-                        const redlist = d.redlist.value || 'Unknown';
-
-                        if (coloringMode === 'trend') {
-                            return selectedFilters.includes(trend);
-                        } else {
-                            return selectedFilters.includes(redlist);
-                        }
-                    }).map(d => ({
-                        name: d.name.value,
-                        species: d.species.value,
-                        genus: d.genus.value,
-                        family: d.family.value,
-                        redlist: d.redlist.value || 'Unknown',
-                        trend: capitalizeFirstLetter(d.trend.value.toLowerCase())
-                    }));
-                } catch (error) {
-                    console.error("Error fetching species data: ", error);
-                    alert("Failed to fetch species data. Error: " + error.message);
-                }
-            }
-
-            // Get Selected Filters
-            function getSelectedTrends() {
-                const trends = [];
-                if (document.getElementById('increasingRate').checked) trends.push('Increasing');
-                if (document.getElementById('decreasingRate').checked) trends.push('Decreasing');
-                if (document.getElementById('stableRate').checked) trends.push('Stable');
-                if (document.getElementById('unknownRate').checked) trends.push('Unknown');
-                return trends;
-            }
-
-            function getSelectedIUCNCategories() {
-                const categories = [];
-                if (document.getElementById('leastConcern').checked) categories.push('Least Concern');
-                if (document.getElementById('nearThreatened').checked) categories.push('Near Threatened');
-                if (document.getElementById('vulnerable').checked) categories.push('Vulnerable');
-                if (document.getElementById('endangered').checked) categories.push('Endangered');
-                if (document.getElementById('criticallyEndangered').checked) categories.push('Critically Endangered');
-                if (document.getElementById('extinct').checked) categories.push('Extinct');
-                return categories;
-            }
-
-            // Helper Function to Capitalize First Letter
-            function capitalizeFirstLetter(string) {
-                return string.charAt(0).toUpperCase() + string.slice(1);
-            }
-
-            // Draw Main Tree
-            async function drawTree() {
-                const data = await fetchData(sparqlQueryFamilies);
-                if (!data || data.length === 0) {
-                    alert("No data returned from the query.");
-                    return;
-                }
-
-                const rootData = {
-                    name: "Root",
-                    children: []
-                };
-
-                const uniqueFamilies = new Set();
-                const orderColors = {};
-                const colorScale = d3.scaleOrdinal(d3.schemeSet3);
-
-                data.forEach(species => {
-                    const order = species.order;
-                    const family = species.family;
-
-                    if (!orderColors[order]) {
-                        orderColors[order] = colorScale(Object.keys(orderColors).length);
-                    }
-
-                    if (!uniqueFamilies.has(family)) {
-                        uniqueFamilies.add(family);
-
-                        let orderNode = rootData.children.find(child => child.name === order);
-                        if (!orderNode) {
-                            orderNode = { name: order, children: [] };
-                            rootData.children.push(orderNode);
-                        }
-
-                        orderNode.children.push({ name: family });
-                    }
-                });
-
-                createTree(rootData, orderColors);
-            }
-
-            // Create Main Tree
-            function createTree(rootData, orderColors) {
-                const width = Math.min(window.innerWidth, 3300);
-                const outerRadius = Math.min(width / 2, 3000);
-                const innerRadius = outerRadius - 200;
-
-                const svg = d3.select("#tree-container")
-                    .append("svg")
-                    .attr("viewBox", [-outerRadius, -outerRadius, width, width])
-                    .attr("preserveAspectRatio", "xMidYMid meet");
-
-                const g = svg.append("g");
-
-                const cluster = d3.cluster()
-                    .size([360, innerRadius]);
-
-                const root = d3.hierarchy(rootData)
-                    .sum(d => d.children ? 0 : 1)
-                    .sort((a, b) => d3.ascending(a.data.name, b.data.name));
-
-                cluster(root);
-
-                const zoom = d3.zoom()
-                    .scaleExtent([0.5, 3])
-                    .on("zoom", (event) => {
-                        g.attr("transform", event.transform);
-                    });
-
-                svg.call(zoom);
-
-                g.append("g")
-                    .attr("fill", "none")
-                    .attr("stroke-opacity", 0.8)
-                    .attr("stroke-width", 1.5)
-                    .selectAll("path")
-                    .data(root.links())
-                    .join("path")
-                    .attr("d", d3.linkRadial()
-                        .angle(d => d.x / 180 * Math.PI)
-                        .radius(d => d.y))
-                    .attr("stroke", d => {
-                        return orderColors[d.target.parent.data.name] || "#FFFFFF";
-                    });
-
-                g.append("g")
-                    .selectAll("text")
-                    .data(root.leaves())
-                    .join("text")
-                    .attr("dy", ".31em")
-                    .attr("transform", d => `
-                        rotate(${d.x - 90}) 
-                        translate(${d.y + 10},0)
-                        ${d.x < 180 ? "" : "rotate(180)"}
-                    `)
-                    .attr("text-anchor", d => d.x < 180 ? "start" : "end")
-                    .style("fill", "#FFFFFF")
-                    .text(d => d.data.name)
-                    .on("mouseover", function (event, d) {
-                        d3.select(this).classed("label--active", true);
-                    })
-                    .on("mouseout", function (event, d) {
-                        d3.select(this).classed("label--active", false);
-                    })
-                    .on("click", async function (event, d) {
-                        const speciesData = await fetchSpeciesData();
-                        const familySpecies = speciesData.filter(species => species.family === d.data.name);
-
-                        if (familySpecies && familySpecies.length > 0) {
-                            // Set the family name above the tree
-                            d3.select("#family-name").text(d.data.name);
-
-                            const genusMap = {};
-                            familySpecies.forEach(species => {
-                                if (!genusMap[species.genus]) {
-                                    genusMap[species.genus] = {
-                                        name: species.genus,
-                                        children: []
-                                    };
-                                }
-                                genusMap[species.genus].children.push({
-                                    name: species.name,
-                                    redlist: species.redlist,
-                                    trend: species.trend
-                                });
-                            });
-
-                            const speciesRoot = {
-                                name: "Species",
-                                children: Object.values(genusMap)
-                            };
-
-                            createSpeciesTree(speciesRoot);
-                            document.getElementById("backButton").style.display = "block";
-                        } else {
-                            alert("No species data available for this family based on the selected filters.");
-                        }
-                    });
-            }
-
-            // Create Species Tree
-            function createSpeciesTree(speciesRoot) {
-                currentSpeciesRoot = speciesRoot; // Store globally
-                d3.select("#tree-container").select("svg").remove();
-
-                const width = Math.min(window.innerWidth, 3300);
-                const outerRadius = Math.min(width / 2, 3000);
-                const innerRadius = outerRadius - 200;
-
-                const svg = d3.select("#tree-container")
-                    .append("svg")
-                    .attr("viewBox", [-outerRadius, -outerRadius, width, width])
-                    .attr("preserveAspectRatio", "xMidYMid meet");
-
-                const g = svg.append("g");
-
-                const cluster = d3.cluster()
-                    .size([360, innerRadius]);
-
-                const root = d3.hierarchy(speciesRoot)
-                    .sum(d => d.children ? 0 : 1)
-                    .sort((a, b) => d3.ascending(a.data.name, b.data.name));
-
-                cluster(root);
-
-                const zoom = d3.zoom()
-                    .scaleExtent([0.5, 3])
-                    .on("zoom", (event) => {
-                        g.attr("transform", event.transform);
-                    });
-
-                svg.call(zoom);
-
-                const tooltip = d3.select("#tooltip");
-
-                g.append("g")
-                    .attr("fill", "none")
-                    .attr("stroke-opacity", 0.8)
-                    .attr("stroke-width", 1.5)
-                    .selectAll("path")
-                    .data(root.links())
-                    .join("path")
-                    .attr("d", d3.linkRadial()
-                        .angle(d => d.x / 180 * Math.PI)
-                        .radius(d => d.y))
-                    .attr("stroke", "#FFFFFF");
-
-                g.append("g")
-                    .selectAll("text")
-                    .data(root.leaves())
-                    .join("text")
-                    .attr("dy", ".31em")
-                    .attr("transform", d => `
-                        rotate(${d.x - 90}) 
-                        translate(${d.y + 10},0)
-                        ${d.x < 180 ? "" : "rotate(180)"}
-                    `)
-                    .attr("text-anchor", d => d.x < 180 ? "start" : "end")
-                    .style("fill", d => {
-                        if (coloringMode === 'iucn') {
-                            return iucnColors[d.data.redlist] || iucnColors['Unknown'];
-                        } else {
-                            return trendColors[d.data.trend] || trendColors['Unknown'];
-                        }
-                    })
-                    .text(d => d.data.name)
-                    .on("mouseover", function (event, d) {
-                        tooltip.transition().duration(200).style("opacity", .9);
-                        tooltip.html(`<strong>${d.data.name}</strong><br>IUCN Category: ${d.data.redlist}<br>Trend: ${d.data.trend}`)
-                            .style("left", (event.pageX + 5) + "px")
-                            .style("top", (event.pageY - 28) + "px");
-                    })
-                    .on("mouseout", function () {
-                        tooltip.transition().duration(500).style("opacity", 0);
-                    });
-
-                // Update Back Button
-                document.getElementById("backButton").style.display = "block";
-            }
-
-            // Back to Main Tree Function
-            function goBackToMainTree() {
-                document.getElementById("backButton").style.display = "none";
-                d3.select("#tree-container").select("svg").remove();
-                d3.select("#family-name").text(""); // Clear family name
-                drawTree();
-            }
-
-            // Initial Draw
-            drawTree();
-
-            // Update Tree on Filter Change
-            document.querySelectorAll('.legend-container input').forEach(input => {
-                input.addEventListener('change', () => {
-                    if (document.getElementById("backButton").style.display === "block") {
-                        createSpeciesTree(currentSpeciesRoot);
-                    } else {
-                        d3.select("#tree-container").select("svg").remove();
-                        d3.select("#family-name").text(""); // Clear family name
-                        drawTree();
-                    }
-                });
-            });
-        </script>
-
-        <!-- Bottom Buttons -->
-        <div class="bottom-buttons">
-            <button onclick="setColoringMode('trend')">Color by Population Trend</button>
-            <button onclick="setColoringMode('iucn')">Color by IUCN Category</button>
-        </div>
-
-        <!-- Legends -->
-        <div id="trend-legend" class="legend-container">
-            <legend>Population Trend</legend>
-            <label><input type="checkbox" id="increasingRate" checked>
-                <div class="legend-color-box" style="background-color: #4CAF50;"></div> Increasing
-            </label>
-            <label><input type="checkbox" id="decreasingRate" checked>
-                <div class="legend-color-box" style="background-color: #F44336;"></div> Decreasing
-            </label>
-            <label><input type="checkbox" id="stableRate" checked>
-                <div class="legend-color-box" style="background-color: #2196F3;"></div> Stable
-            </label>
-            <label><input type="checkbox" id="unknownRate" checked>
-                <div class="legend-color-box" style="background-color: #9E9E9E;"></div> Unknown
-            </label>
-        </div>
-
-        <div id="iucn-legend" class="legend-container">
-            <legend>IUCN Category</legend>
-            <label><input type="checkbox" id="vulnerable" checked>
-                <div class="legend-color-box" style="background-color: #FFC107;"></div> Vulnerable
-            </label>
-            <label><input type="checkbox" id="endangered" checked>
-                <div class="legend-color-box" style="background-color: #FF9800;"></div> Endangered
-            </label>
-            <label><input type="checkbox" id="criticallyEndangered" checked>
-                <div class="legend-color-box" style="background-color: #F44336;"></div> Critically Endangered
-            </label>
-            <label><input type="checkbox" id="extinct" checked>
-                <div class="legend-color-box" style="background-color: #9E9E9E;"></div> Extinct
-            </label>
-        </div>
     </div>
 
     <!-- About Content -->
@@ -716,6 +679,52 @@
         <p>
             By visualizing this data, we hope to shed light on the urgent need for marine conservation and inspire action to protect our oceans.
         </p>
+    </div>
+
+    <!-- Species-level UI -->
+    <div id="backButton">
+        <button onclick="goBackToMainTree()">Back to Main Tree</button>
+    </div>
+
+    <!-- Bottom Buttons (shown only at species-level) -->
+    <div class="bottom-buttons">
+        <button onclick="setColoringMode('trend')">Color by Population Trend</button>
+        <button onclick="setColoringMode('iucn')">Color by IUCN Category</button>
+    </div>
+
+    <!-- Legends (shown only at species-level) -->
+    <div class="legends-container">
+        <div class="legend-box" id="trend-legend">
+            <h3>Population Trends</h3>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color:#4CAF50;"></div><span>Increasing</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color:#F44336;"></div><span>Decreasing</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color:#2196F3;"></div><span>Stable</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color:#9E9E9E;"></div><span>Unknown</span>
+            </div>
+        </div>
+
+        <div class="legend-box" id="iucn-legend">
+            <h3>IUCN Categories</h3>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color:#FFC107;"></div><span>Vulnerable</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color:#FF9800;"></div><span>Endangered</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color:#F44336;"></div><span>Critically Endangered</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color:#9E9E9E;"></div><span>Extinct</span>
+            </div>
+        </div>
     </div>
 
     <!-- Footer -->
