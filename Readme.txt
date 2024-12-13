@@ -3,7 +3,7 @@ Find this repository at: https://github.com/Baxby-UM/PRA3006
 The Dying Blue project shows an interactive phylogenetic tree of species across all marine regions that classify as vulnerable or worse based on data and species from the IUCN Redlist.
 
 				The Dying Blue
-    Copyright (C) 2024 BADIN S., SCHMIDT E.,
+    Copyright (C) 2024 BADIN S., Benoist J., SCHMIDT E.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
