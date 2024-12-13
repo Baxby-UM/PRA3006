@@ -461,8 +461,11 @@
             const containerHeight = containerNode.clientHeight;
 
             // Increase outerRadius by dividing by a smaller number (1.5 instead of 2)
-            const outerRadius = Math.min(containerWidth, containerHeight) / 2.0;
-            const innerRadius = outerRadius - 90; // Slightly bigger gap than before
+            //const outerRadius = Math.min(containerWidth, containerHeight) / 1.5;
+            //const innerRadius = outerRadius - 90; // Slightly bigger gap than before
+
+            const outerRadius = 350;
+            const innerRadius = outerRadius - (outerRadius/2);
 
             const svg = container.append("svg")
                 .attr("width", containerWidth)
@@ -662,7 +665,7 @@
     <div id="home-content">
         <div class="tree-container" id="tree-container">
             <h2 class="tree-title">Phylogenetic Tree of Marine Species</h2>
-            <p class="tree-description">This visualization represents marine species as a phylogenetic tree.</p>
+            <p class="tree-description">This visualization represents marine orders as a phylogenetic tree. <br> Click on a family name to see the species tree within it.</p>
             <div class="svg-container"></div>
         </div>
 
